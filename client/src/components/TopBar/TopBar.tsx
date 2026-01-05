@@ -7,7 +7,7 @@ const TopBar = () => {
   return (
     <nav className="bg-primary text-darktext shadow-md">
       <div className="px-6 h-16 flex items-center justify-between">
-        <h1 className="text-xl font-bold tracking-wide">Service Tracker</h1>
+        <h1 className="text-xl font-bold tracking-wide">Maintenance Tracker</h1>
 
         <div className="flex items-center gap-6">
           <div className="text-sm">
