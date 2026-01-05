@@ -1,0 +1,44 @@
+{
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch server.ts",
+    "start": "tsx server.ts",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "build": "tsc",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:push": "prisma db push"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.10.1",
+    "@types/pg": "^8.15.6",
+    "@types/supertest": "^6.0.3",
+    "cross-env": "^10.1.0",
+    "dotenv": "^17.2.3",
+    "eslint": "^9.39.1",
+    "express": "^5.2.1",
+    "install": "^0.13.0",
+    "jest": "^30.2.0",
+    "nodemon": "^3.1.11",
+    "npm": "^11.6.4",
+    "prettier": "^3.7.3",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.6",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.0.1",
+    "@prisma/client": "^6.19.0",
+    "better-auth": "^1.4.5",
+    "cors": "^2.8.5",
+    "pg": "^8.16.3",
+    "prisma": "^6.19.0"
+  }
+}

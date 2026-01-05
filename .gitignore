@@ -1,0 +1,54 @@
+# ===========================
+# Node / General
+# ===========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# dotenv environment files
+.env
+.env.local
+.env.*.local
+
+# Build output
+dist/
+build/
+.tmp/
+
+# ===========================
+# Vite specific
+# ===========================
+vite.config.ts.timestamp-*
+.vite/
+
+# ===========================
+# Frontend specific
+# ===========================
+*.tsbuildinfo
+*.sourcemap
+
+# ===========================
+# Backend specific
+# ===========================
+logs/
+*.log
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# TypeScript
+*.tsbuildinfo
+
+# ===========================
+# OS / Editor junk
+# ===========================
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.swp

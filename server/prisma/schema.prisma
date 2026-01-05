@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") 
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String?   
+  name          String
+  emailVerified Boolean   @default(false) @map("email_verified")  // Changed to Boolean
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  serviceRecords ServiceRecord[]
+  
+  sessions      Session[]
+  accounts      Account[]
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  expiresAt    DateTime @map("expires_at")
+  token        String   @unique
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  ipAddress    String?  @map("ip_address")
+  userAgent    String?  @map("user_agent")
+  userId       String   @map("user_id")
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                String   @id @default(uuid())
+  accountId         String   @map("account_id")
+  providerId        String   @map("provider_id")
+  userId            String   @map("user_id")
+  accessToken       String?  @map("access_token")
+  refreshToken      String?  @map("refresh_token")
+  idToken           String?  @map("id_token")
+  expiresAt         DateTime? @map("expires_at")
+  password          String?
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+}
+
+model ServiceRecord {
+  id  String @id @default(uuid())
+  date  DateTime
+  serviceType String
+  serviceTime Float
+  equipmentId String
+  equipmentType String
+  technician  String
+  partsUsed String?
+  serviceNotes  String
+  userId  String
+  user  User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
