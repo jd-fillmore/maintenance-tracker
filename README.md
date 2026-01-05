@@ -2,6 +2,10 @@
 
 A comprehensive maintenance tracking system designed to streamline equipment service management with real-time monitoring, detailed service records, and user-friendly analytics.
 
+
+https://github.com/user-attachments/assets/6af7f266-f2a7-411a-b131-965c9349594f
+
+
 ## 🚀 Tech Stack
 
 ### Frontend
