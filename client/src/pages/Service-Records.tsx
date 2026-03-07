@@ -15,7 +15,7 @@ const ServiceRecords = () => {
   );
 
   // AI Chat state
-  const [showAIChat, setShowAIChat] = useState<boolean>(false);
+  const [showAIChat, setShowAIChat] = useState<boolean>(true);
   const [aiInput, setAiInput] = useState<string>("");
   const [aiLoading, setAiLoading] = useState<boolean>(false);
   const [aiMessages, setAiMessages] = useState<Array<{text: string, isUser: boolean}>>([]);
@@ -216,18 +216,22 @@ const ServiceRecords = () => {
         transition={{ duration: 0.3, delay: 0.08 }}
         className="mb-6"
       >
-        <button
-          onClick={() => setShowAIChat(!showAIChat)}
-          className="flex items-center gap-2 bg-secondary text-darktext px-4 py-2 rounded hover:bg-secondary/80 transition-colors mb-2"
-        >
-          🤖 AI Assistant {showAIChat ? '▼' : '▶'}
-        </button>
+        <div className="bg-darkcard rounded-lg p-4 border border-primary/30">
+          <h3 className="text-lg font-semibold text-secondary mb-3 flex items-center gap-2">
+            🤖 AI Assistant
+            <button
+              onClick={() => setShowAIChat(!showAIChat)}
+              className="text-sm text-secondary hover:text-primary"
+            >
+              {showAIChat ? '▼' : '▶'}
+            </button>
+          </h3>
 
-        {showAIChat && (
-          <div className="bg-darkcard rounded-lg p-4 border border-primary/30">
-            <p className="text-sm text-secondary mb-3">
-              Ask questions about your service records. Try: "What is the total service time for equipment ABC?" or "When was the last service?"
-            </p>
+          {showAIChat && (
+            <>
+              <p className="text-sm text-secondary mb-3">
+                Ask questions about your service records. Try: "What is the total service time for equipment ABC?" or "When was the last service?"
+              </p>
 
             <div className="h-32 overflow-y-auto mb-3 space-y-2">
               {aiMessages.map((msg, index) => (
@@ -269,6 +273,7 @@ const ServiceRecords = () => {
             </div>
           </div>
         )}
+        </div>
       </motion.div>
 
       {/* Search + Add Button */}

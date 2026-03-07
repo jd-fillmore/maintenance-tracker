@@ -105,7 +105,7 @@ Respond only with valid JSON.
     if (error.status === 429 || error.code === 'insufficient_quota') {
       return res.json({
         query,
-        error: "🚫 AI Chat Unavailable\n\nYour OpenAI account has run out of free credits. To continue using AI features:\n\n1. Visit https://platform.openai.com/account/billing\n2. Add a payment method\n3. Purchase credits\n\nThe rest of the app works perfectly without AI!"
+        error: "🚫 AI Assistant Temporarily Unavailable\n\nThe AI service has reached its monthly usage limit. This is a normal limitation of the free tier.\n\nTo restore AI functionality:\n• Visit https://platform.openai.com/account/billing\n• Add a payment method to your account\n• Purchase API credits\n\nThe rest of the maintenance tracker works perfectly without AI assistance."
       });
     }
 
