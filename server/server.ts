@@ -6,6 +6,7 @@ import { PrismaClient } from "@prisma/client";
 import cors from "cors";
 
 import serviceRecordRoutes from "./routes/serviceRecord.routes";
+import aiRoutes from "./routes/ai.routes";
 
 const app = express();
 app.use(express.json());
@@ -53,6 +54,9 @@ app.use("/api/auth", toNodeHandler(auth));
 
 // Get all service records for logged-in user
 app.use("/api/service-records", serviceRecordRoutes);
+
+// AI query routes
+app.use("/api/ai", aiRoutes);
 
 // Export app for testing
 export default app;
