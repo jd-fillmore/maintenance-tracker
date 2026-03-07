@@ -62,13 +62,21 @@ export const authAPI = {
 };
 
 // ============================================
-// SERVICE RECORDS ENDPOINTS
+// AI ENDPOINTS
 // ============================================
+
+export const aiAPI = {
+  // Query AI
+  query: async (query: string): Promise<any> => {
+    const response = await api.post("/ai/query", { query });
+    return response.data;
+  },
+};
 
 export const serviceRecordsAPI = {
   // Get all service records for logged-in user
-  getAll: async (): Promise<ServiceRecord[]> => {
-    const response = await api.get<ServiceRecord[]>("/service-records");
+  getAll: async (params?: { search?: string; dateFrom?: string; dateTo?: string }): Promise<ServiceRecord[]> => {
+    const response = await api.get<ServiceRecord[]>("/service-records", { params });
     return response.data;
   },
 

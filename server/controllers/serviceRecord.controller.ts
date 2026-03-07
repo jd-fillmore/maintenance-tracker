@@ -5,8 +5,26 @@ const prisma = new PrismaClient();
 
 export const getAllRecords = async (req: Request, res: Response) => {
   try {
+    const { search, dateFrom, dateTo } = req.query;
+    const where: any = { userId: req.user!.id };
+
+    if (search) {
+      where.OR = [
+        { serviceNotes: { contains: search as string, mode: 'insensitive' } },
+        { technician: { contains: search as string, mode: 'insensitive' } },
+        { serviceType: { contains: search as string, mode: 'insensitive' } },
+      ];
+    }
+
+    if (dateFrom) {
+      where.date = { ...where.date, gte: new Date(dateFrom as string) };
+    }
+    if (dateTo) {
+      where.date = { ...where.date, lte: new Date(dateTo as string + 'T23:59:59') };
+    }
+
     const records = await prisma.serviceRecord.findMany({
-      where: { userId: req.user!.id },
+      where,
       orderBy: { createdAt: "desc" },
     });
 

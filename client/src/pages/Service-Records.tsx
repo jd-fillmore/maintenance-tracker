@@ -1,15 +1,24 @@
 import { useEffect, useState } from "react";
 import type { ServiceRecord } from "../types";
 import { serviceRecordsAPI } from "../services/api";
+import { aiAPI } from "../services/api";
 import { motion } from "framer-motion";
 
 const ServiceRecords = () => {
   const [records, setRecords] = useState<ServiceRecord[]>([]);
   const [search, setSearch] = useState<string>("");
+  const [dateFrom, setDateFrom] = useState<string>("");
+  const [dateTo, setDateTo] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
   const [editingRecord, setEditingRecord] = useState<ServiceRecord | null>(
     null
   );
+
+  // AI Chat state
+  const [showAIChat, setShowAIChat] = useState<boolean>(false);
+  const [aiInput, setAiInput] = useState<string>("");
+  const [aiLoading, setAiLoading] = useState<boolean>(false);
+  const [aiMessages, setAiMessages] = useState<Array<{text: string, isUser: boolean}>>([]);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -24,25 +33,19 @@ const ServiceRecords = () => {
   });
 
   // -----------------------
-  // Fetch records on mount
+  // Fetch records on mount and when filters change
   // -----------------------
   useEffect(() => {
     const fetchRecords = async () => {
-      const data = await serviceRecordsAPI.getAll();
+      const data = await serviceRecordsAPI.getAll({ search, dateFrom, dateTo });
       setRecords(data);
     };
     fetchRecords();
-  }, []);
+  }, [search, dateFrom, dateTo]);
 
   // -----------------------
-  // Filtered records for search
+  // No client-side filtering needed
   // -----------------------
-  const filteredRecords = records.filter(
-    (r) =>
-      r.serviceNotes.toLowerCase().includes(search.toLowerCase()) ||
-      r.technician.toLowerCase().includes(search.toLowerCase()) ||
-      r.serviceType.toLowerCase().includes(search.toLowerCase())
-  );
 
   // -----------------------
   // Helpers: Form and Modal
@@ -145,10 +148,128 @@ const ServiceRecords = () => {
     }
   };
 
+  // -----------------------
+  // AI Chat Functions
+  // -----------------------
+  const handleAIQuery = async () => {
+    if (!aiInput.trim()) return;
+
+    const userMessage = { text: aiInput, isUser: true };
+    setAiMessages(prev => [...prev, userMessage]);
+    setAiInput("");
+    setAiLoading(true);
+
+    try {
+      const response = await aiAPI.query(aiInput);
+      let messageText: string;
+      if (response.error) {
+        messageText = response.error;
+      } else {
+        messageText = JSON.stringify(response.result, null, 2);
+      }
+      const aiMessage = { text: messageText, isUser: false };
+      setAiMessages(prev => [...prev, aiMessage]);
+    } catch (error) {
+      const errorMessage = { text: "Sorry, I couldn't process that query. Please try again.", isUser: false };
+      setAiMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-darkbg text-darktext p-8">
       <h2 className="text-3xl font-bold mb-2">Service Records</h2>
       <p className="mb-6 opacity-80">History of all maintenance and repairs.</p>
+
+      {/* Date Filters */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.05 }}
+        className="flex flex-wrap gap-4 mb-4"
+      >
+        <div>
+          <label className="block text-sm font-medium text-secondary mb-1">From Date</label>
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+            className="px-3 py-2 rounded bg-darkinput border border-gray-600 text-darktext focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-secondary mb-1">To Date</label>
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+            className="px-3 py-2 rounded bg-darkinput border border-gray-600 text-darktext focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
+      </motion.div>
+
+      {/* AI Chat Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.08 }}
+        className="mb-6"
+      >
+        <button
+          onClick={() => setShowAIChat(!showAIChat)}
+          className="flex items-center gap-2 bg-secondary text-darktext px-4 py-2 rounded hover:bg-secondary/80 transition-colors mb-2"
+        >
+          🤖 AI Assistant {showAIChat ? '▼' : '▶'}
+        </button>
+
+        {showAIChat && (
+          <div className="bg-darkcard rounded-lg p-4 border border-primary/30">
+            <p className="text-sm text-secondary mb-3">
+              Ask questions about your service records. Try: "What is the total service time for equipment ABC?" or "When was the last service?"
+            </p>
+
+            <div className="h-32 overflow-y-auto mb-3 space-y-2">
+              {aiMessages.map((msg, index) => (
+                <div
+                  key={index}
+                  className={`p-2 rounded text-sm ${
+                    msg.isUser
+                      ? "bg-primary text-darktext ml-auto max-w-md"
+                      : "bg-darkinput text-darktext mr-auto max-w-md"
+                  }`}
+                >
+                  <pre className="whitespace-pre-wrap font-sans">{msg.text}</pre>
+                </div>
+              ))}
+              {aiLoading && (
+                <div className="bg-darkinput text-darktext p-2 rounded mr-auto max-w-md text-sm">
+                  Thinking...
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={aiInput}
+                onChange={(e) => setAiInput(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && handleAIQuery()}
+                placeholder="Ask a question..."
+                className="flex-1 px-3 py-2 rounded bg-darkinput border border-gray-600 text-darktext placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                disabled={aiLoading}
+              />
+              <button
+                onClick={handleAIQuery}
+                disabled={aiLoading || !aiInput.trim()}
+                className="bg-primary text-darktext px-3 py-2 rounded hover:bg-primary-dark transition-colors disabled:opacity-50 text-sm"
+              >
+                Ask
+              </button>
+            </div>
+          </div>
+        )}
+      </motion.div>
 
       {/* Search + Add Button */}
       <motion.div
@@ -208,8 +329,8 @@ const ServiceRecords = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-primary/30">
-              {filteredRecords.length > 0 ? (
-                filteredRecords.map((record) => (
+              {records.length > 0 ? (
+                records.map((record) => (
                   <tr
                     key={record.id}
                     className="hover:bg-primary/10 transition-colors"
