@@ -11,13 +11,15 @@ const ServiceRecords = () => {
   const [dateTo, setDateTo] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
   const [editingRecord, setEditingRecord] = useState<ServiceRecord | null>(
-    null
+    null,
   );
 
   // AI Chat state
   const [aiInput, setAiInput] = useState<string>("");
   const [aiLoading, setAiLoading] = useState<boolean>(false);
-  const [aiMessages, setAiMessages] = useState<Array<{text: string, isUser: boolean}>>([]);
+  const [aiMessages, setAiMessages] = useState<
+    Array<{ text: string; isUser: boolean }>
+  >([]);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -107,7 +109,7 @@ const ServiceRecords = () => {
         });
 
         setRecords(
-          records.map((r) => (r.id === editingRecord.id ? updated : r))
+          records.map((r) => (r.id === editingRecord.id ? updated : r)),
         );
         closeModal();
       } catch (error) {
@@ -154,7 +156,7 @@ const ServiceRecords = () => {
     if (!aiInput.trim()) return;
 
     const userMessage = { text: aiInput, isUser: true };
-    setAiMessages(prev => [...prev, userMessage]);
+    setAiMessages((prev) => [...prev, userMessage]);
     setAiInput("");
     setAiLoading(true);
 
@@ -167,10 +169,13 @@ const ServiceRecords = () => {
         messageText = JSON.stringify(response.result, null, 2);
       }
       const aiMessage = { text: messageText, isUser: false };
-      setAiMessages(prev => [...prev, aiMessage]);
+      setAiMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
-      const errorMessage = { text: "Sorry, I couldn't process that query. Please try again.", isUser: false };
-      setAiMessages(prev => [...prev, errorMessage]);
+      const errorMessage = {
+        text: "Sorry, the quota for this AI usage has been exceeded. Please try later.",
+        isUser: false,
+      };
+      setAiMessages((prev) => [...prev, errorMessage]);
     } finally {
       setAiLoading(false);
     }
@@ -189,7 +194,9 @@ const ServiceRecords = () => {
         className="flex flex-wrap gap-4 mb-4"
       >
         <div>
-          <label className="block text-sm font-medium text-secondary mb-1">From Date</label>
+          <label className="block text-sm font-medium text-secondary mb-1">
+            From Date
+          </label>
           <input
             type="date"
             value={dateFrom}
@@ -198,7 +205,9 @@ const ServiceRecords = () => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-secondary mb-1">To Date</label>
+          <label className="block text-sm font-medium text-secondary mb-1">
+            To Date
+          </label>
           <input
             type="date"
             value={dateTo}
@@ -221,47 +230,48 @@ const ServiceRecords = () => {
           </h3>
 
           <p className="text-sm text-secondary mb-3">
-            Ask questions about your service records. Try: "What is the total service time for equipment ABC?" or "When was the last service?"
+            Ask questions about your service records. Try: "What is the total
+            service time for equipment ABC?" or "When was the last service?"
           </p>
 
-            <div className="h-32 overflow-y-auto mb-3 space-y-2">
-              {aiMessages.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`p-2 rounded text-sm ${
-                    msg.isUser
-                      ? "bg-primary text-darktext ml-auto max-w-md"
-                      : "bg-darkinput text-darktext mr-auto max-w-md"
-                  }`}
-                >
-                  <pre className="whitespace-pre-wrap font-sans">{msg.text}</pre>
-                </div>
-              ))}
-              {aiLoading && (
-                <div className="bg-darkinput text-darktext p-2 rounded mr-auto max-w-md text-sm">
-                  Thinking...
-                </div>
-              )}
-            </div>
-
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={aiInput}
-                onChange={(e) => setAiInput(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && handleAIQuery()}
-                placeholder="Ask a question..."
-                className="flex-1 px-3 py-2 rounded bg-darkinput border border-gray-600 text-darktext placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary text-sm"
-                disabled={aiLoading}
-              />
-              <button
-                onClick={handleAIQuery}
-                disabled={aiLoading || !aiInput.trim()}
-                className="bg-primary text-darktext px-3 py-2 rounded hover:bg-primary-dark transition-colors disabled:opacity-50 text-sm"
+          <div className="h-32 overflow-y-auto mb-3 space-y-2">
+            {aiMessages.map((msg, index) => (
+              <div
+                key={index}
+                className={`p-2 rounded text-sm ${
+                  msg.isUser
+                    ? "bg-primary text-darktext ml-auto max-w-md"
+                    : "bg-darkinput text-darktext mr-auto max-w-md"
+                }`}
               >
-                Ask
-              </button>
-            </div>
+                <pre className="whitespace-pre-wrap font-sans">{msg.text}</pre>
+              </div>
+            ))}
+            {aiLoading && (
+              <div className="bg-darkinput text-darktext p-2 rounded mr-auto max-w-md text-sm">
+                Thinking...
+              </div>
+            )}
+          </div>
+
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={aiInput}
+              onChange={(e) => setAiInput(e.target.value)}
+              onKeyPress={(e) => e.key === "Enter" && handleAIQuery()}
+              placeholder="Ask a question..."
+              className="flex-1 px-3 py-2 rounded bg-darkinput border border-gray-600 text-darktext placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+              disabled={aiLoading}
+            />
+            <button
+              onClick={handleAIQuery}
+              disabled={aiLoading || !aiInput.trim()}
+              className="bg-primary text-darktext px-3 py-2 rounded hover:bg-primary-dark transition-colors disabled:opacity-50 text-sm"
+            >
+              Ask
+            </button>
+          </div>
         </div>
       </motion.div>
 
