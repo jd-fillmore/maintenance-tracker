@@ -35,12 +35,14 @@ https://github.com/user-attachments/assets/6af7f266-f2a7-411a-b131-965c9349594f
 
 ## ✨ Key Features
 
-- **🔐 Secure Authentication** - Email-based auth with session management
-- **📊 Real-time Dashboard** - Overview of service metrics and statistics
+- **🔐 Secure Authentication** - Email‑based auth with session management
+- **📊 Real‑time Dashboard** - Overview of service metrics and statistics
 - **🔧 Service Record Management** - Complete CRUD operations for maintenance records
-- **📱 Responsive Design** - Mobile-friendly interface with dark theme
+- **📅 Advanced Filtering** - Search and date‑range filters with server‑side processing
+- **🤖 AI Assistant** - Natural language queries over your service data
+- **📱 Responsive Design** - Mobile‑friendly interface with dark theme
 - **⚡ Fast Performance** - Optimized data fetching and smooth animations
-- **🛡️ Protected Routes** - Authentication-gated access to sensitive data
+- **🛡️ Protected Routes** - Authentication‑gated access to sensitive data
 - **📈 Analytics** - Track total service hours, last service dates, and equipment statistics
 
 ## 🏗️ Architecture Overview
@@ -71,14 +73,37 @@ ServiceRecord {
 
 ## 🚦 Application Flow
 
+*(see above for frontend and backend flows)*
+
+---
+
+## 📦 Deployment & Development Tools
+
+- **Docker**: `client/Dockerfile`, `server/Dockerfile`, and `docker-compose.yml` enable one‑command local development and production builds.
+- **GitHub Actions**: CI pipeline runs tests, linting, builds, and Docker image creation on push/PR.
+- **Environment Variables**: `.env` holds `DATABASE_URL`, `OPENAI_API_KEY`, `BASE_URL`, etc.
+
+---
+
+## 🛠️ Getting Started
+
+1. Clone the repo and run `npm install` in both `client` and `server`.
+2. Set up PostgreSQL and configure `DATABASE_URL`.
+3. Add your OpenAI API key to `.env` (`OPENAI_API_KEY=`).
+4. Run `npm run dev` in each folder or `docker-compose up --build`.
+5. Visit `http://localhost:5173` for the frontend.
+
+Enjoy!
+
 ### Frontend Flow
 1. **Entry Point** - User lands on login page (`/`)
 2. **Authentication** - Login via email/password using Better Auth
 3. **Protected Routes** - Authenticated users access dashboard and service records
 4. **Navigation** - Sidebar navigation between Dashboard and Service Records
 5. **Data Fetching** - Axios interceptors handle API calls with automatic credentials
-6. **State Management** - React hooks manage local component state
-7. **UI Updates** - Framer Motion provides smooth transitions between views
+- **AI Chat** – Ask questions about your data with the integrated assistant
+7. **State Management** - React hooks manage local component state
+8. **UI Updates** - Framer Motion provides smooth transitions between views
 
 ### Backend Flow
 1. **Server Initialization** - Express server starts on port 3000
@@ -111,12 +136,13 @@ ServiceRecord {
 - **`Sidebar`** - Navigation menu with user info
 - **`TopBar`** - Header with logout functionality
 - **`Dashboard`** - Overview cards and service statistics
-- **`ServiceRecords`** - Full CRUD interface for maintenance records
+- **`ServiceRecords`** - Full CRUD interface for maintenance records, filters, and AI chat
 
 ### Backend Components
 - **`auth.ts`** - Better Auth configuration
-- **`serviceRecord.controller.ts`** - Business logic for service records
+- **`serviceRecord.controller.ts`** - Business logic for service records (includes date filtering)
 - **`serviceRecord.routes.ts`** - Route definitions and middleware
+- **`ai.controller.ts`** - AI assistant logic with OpenAI integration
 - **`requireAuth.ts`** - Authentication middleware
 - **`Prisma Client`** - Database connection and queries
 
